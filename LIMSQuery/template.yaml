@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Lambda function for searching LabGuru for stocks
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 300
+    MemorySize: 512
+    Environment:
+      Variables:
+        pydna_config_dir : /tmp/pydna
+        pydna_log_dir : /tmp/pydna
+        pydna_data_dir : /tmp/pydna
+        lg_config: /tmp/lg_config
+
+
+Resources:
+  LGSearchQuery:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      PackageType: Image
+      ImageUri: 409124030547.dkr.ecr.us-east-2.amazonaws.com/lgfind_image:latest
+      Architectures:
+        - x86_64
+      Events:
+        LGSearch:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /query
+            Method: post
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  LgSearchQueryApi:
+    Description: "API Gateway endpoint URL for Prod stage for LG Search query"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/query/"
+  LGSearchQuery:
+    Description: "LG Search Lambda Function ARN"
+    Value: !GetAtt LGSearchQuery.Arn
+  LGSearchQueryIamRole:
+    Description: "Implicit IAM Role created for LG Search query"
+    Value: !GetAtt LGSearchQueryRole.Arn
