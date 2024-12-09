@@ -7,39 +7,32 @@ Globals:
   Function:
     Timeout: 300
     MemorySize: 512
-    Environment:
-      Variables:
-        pydna_config_dir : /tmp/pydna
-        pydna_log_dir : /tmp/pydna
-        pydna_data_dir : /tmp/pydna
-        lg_config: /tmp/lg_config
-
 
 Resources:
-  LGSearchQuery:
+  LGSearchAuthandResponse:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       PackageType: Image
-      ImageUri: <accountID>.dkr.ecr.us-east-2.amazonaws.com/lims_search_image:latest
+      ImageUri: <accountID>.dkr.ecr.us-east-2.amazonaws.com/lims_search_auth_image:latest
       Architectures:
         - x86_64
       Events:
-        LGSearch:
+        LGSearchAuthandResponse:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /query
+            Path: /authandresponse
             Method: post
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  LgSearchQueryApi:
-    Description: "API Gateway endpoint URL for Prod stage for LG Search query"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/query/"
-  LGSearchQuery:
-    Description: "LG Search Lambda Function ARN"
-    Value: !GetAtt LGSearchQuery.Arn
-  LGSearchQueryIamRole:
-    Description: "Implicit IAM Role created for LG Search query"
-    Value: !GetAtt LGSearchQueryRole.Arn
+  LGSearchAuthandResponseApi:
+    Description: "API Gateway endpoint URL for Prod stage for LG Search Authentication and Response"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/auth/"
+  LGSearchAuthandResponse:
+    Description: "LG Search Authentication Lambda Function ARN"
+    Value: !GetAtt LGSearchAuth.Arn
+  LGSearchAuthIamRole:
+    Description: "Implicit IAM Role created for LG Search Authentication"
+    Value: !GetAtt LGSearchAuthRole.Arn
